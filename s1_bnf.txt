@@ -1,0 +1,18 @@
+program: (block)*
+block: func | ife | ifne | whilee | whilene | statement_list
+func: FID LBR formparams RBR LFBR statement_list RFBR
+ife: IFE LBR actvar RBR LFBR statement_list RFBR
+ifne: IFNE LBR actvar RBR LFBR statement_list RFBR
+whilee: WHIE LBR actvar RBR LFBR statement_list RFBR
+whilene: WHINE LBR actvar RBR LFBR statement_list RFBR
+formparams: (formvar COMMA)* formvar | EMP
+actvar: ACTVID
+formvar: FORMVID
+statement_list: (statement)*
+statement: assign SEMICOL | funcall SEMICOL | LCOMM COMMENT RCOMM | EMP
+assign: var ASSIGN expr
+funcall: FID LBR actparams RBR
+actparams: (expr COMMA)* expr | EMP
+expr: (expr | term) (UNION | INTER | DIFF | SYMDIFF) (expr | term)
+term: funcall | actvar | factor | LBR expr RBR
+factor: SET
