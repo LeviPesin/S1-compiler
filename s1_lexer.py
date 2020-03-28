@@ -57,6 +57,7 @@ class Lexer:
 			if kind == 'MISMATCH':
 				raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			elif kind == 'SPACE':
+				self.pos += 1
 				continue
 			elif kind in ('FID', 'FORMVID', 'VID'):
 				if value in self.reserved_keywords:
@@ -64,6 +65,6 @@ class Lexer:
 					if token in tokens:
 						kind = token
 					raise RuntimeError(f'{value!r} unexpected at {self.pos}')
-			self.pos += len(value) + 1
+			self.pos += len(value)
 			return Token(kind, value)
 		return Token('EOF', 'EOF')
