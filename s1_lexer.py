@@ -24,19 +24,19 @@ class Lexer:
 			('FID', r'(A-Za-z)+'),
 			('FORMVID', r'(A-Za-z)+'),
 			('VID', r'(0-9A-Za-z)+'),
-			('LBR', r'('),
-			('RBR', r')'),
+			('LBR', r'\('),
+			('RBR', r'\)'),
 			('LCBR', r'{'),
 			('RCBR', r'}'),
-			('LCOMM', r'/*'),
-			('RCOMM', r'*/'),
-			('LSBR', r'('),
-			('RSBR', r')'),
+			('LCOMM', r'/\*'),
+			('RCOMM', r'\*/'),
+			('LSBR', r'\['),
+			('RSBR', r'\]'),
 			('COMMA', r','),
 			('SEMICOL', r';'),
 			('ASSIGN', r'='),
-			('UNION', r'+'),
-			('INTER', r'*'),
+			('UNION', r'\+'),
+			('INTER', r'\*'),
 			('DIFF', r'-'),
 			('SYMDIFF', r'~'),
 			('EMP', r''),
@@ -57,7 +57,6 @@ class Lexer:
 			if kind == 'MISMATCH':
 				raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			elif kind == 'SPACE':
-				self.pos += 1
 				continue
 			elif kind in ('FID', 'FORMVID', 'VID'):
 				if value in self.reserved_keywords:
@@ -65,6 +64,6 @@ class Lexer:
 					if token in tokens:
 						kind = token
 					raise RuntimeError(f'{value!r} unexpected at {self.pos}')
-			self.pos += len(value)
+			self.pos = mo.end() + 1
 			return Token(kind, value)
 		return Token('EOF', 'EOF')
