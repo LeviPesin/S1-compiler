@@ -48,9 +48,9 @@ class Lexer:
 		
 	def get_next_token(self, tokens):
 		#tokens should contain MISMATCH and SPACE
-		token_specification = [[token, specification] for [token, specification] in self.token_specification if token in tokens]
+		token_specification = [(token, specification) for [token, specification] in self.token_specification if token in tokens]
 		tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
-		mos = re.finditer(tok_regex, self.text[pos:])
+		mos = re.finditer(tok_regex, self.text[self.pos:])
 		for mo in mos:
 			kind = mo.lastgroup
 			value = mo.group()
