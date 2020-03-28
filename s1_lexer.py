@@ -46,7 +46,7 @@ class Lexer:
 		self.reserved_keywords = ['ife', 'ifne', 'whilee', 'whilene', 'return']
 		self.reserved_keywords_tokens = [{'ife', 'IFE'}, {'ifne', 'IFNE'}, {'whilee', 'WHIE'}, {'whilene', 'WHINE'}, {'return', 'RET'}]
 		
-	def get_next_token(tokens):
+	def get_next_token(self, tokens):
 		#tokens should contain MISMATCH and SPACE
 		token_specification = [[token, specification] for [token, specification] in self.token_specification if token in tokens]
 		tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
