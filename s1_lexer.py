@@ -20,6 +20,7 @@ class Lexer():
 			['IFNE', r'ifne'],
 			['WHIE', r'whilee'],
 			['WHINE', r'whilene'],
+			['RET', r'return'],
 			['FID', r'[A-Za-z]+'],
 			['FORMVID', r'[A-Za-z]+'],
 			['ACTVID', r'[0-9A-Za-z]+'],
