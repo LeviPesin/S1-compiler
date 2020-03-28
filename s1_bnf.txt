@@ -14,8 +14,8 @@ assign: var ASSIGN expr
 funcall: FID LBR actparams RBR
 actparams: (expr COMMA)* expr | EMP
 expr: (expr | term) (UNION | INTER | DIFF | SYMDIFF) (expr | term)
-term: funcall | actvar | factor | LBR expr RBR
-factor: SET
+term: funcall | actvar | set | LBR expr RBR
+set: LSBR actparams RSBR
 
 
 
@@ -23,6 +23,7 @@ FID - function name
 LBR and RBR - round brackets ( and )
 LCBR and RCBR - curly brackets { and }
 LCOMM and RCOMM - /* and */
+LSBR and RSBR - square brackets [ and ]
 IFE - "ife"
 IFNE - "ifne"
 WHIE - "whilee"
@@ -33,4 +34,3 @@ EMP - empty
 ACTVID and FORMVID - names of actual and formal variables
 ASSIGN - equality sign =
 UNION, INTER, DIFF and SYMDIFF - union sign +, intersection sign *, difference sign -, and symmetric difference sign ~
-SET - set
