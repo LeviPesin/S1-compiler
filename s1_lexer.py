@@ -43,6 +43,8 @@ class Lexer:
 			['SPACE', r'\s'],
 			['MISMATCH', r'.']
 		]
+		self.reserved_keywords = ['ife', 'ifne', 'whilee', 'whilene', 'return']
+		self.reserved_keywords_tokens = [{'ife', 'IFE'}, {'ifne', 'IFNE'}, {'whilee', 'WHIE'}, {'whilene', 'WHINE'}, {'return', 'RET'}]
 		
 	def get_next_token(tokens):
 		#tokens should contain MISMATCH and SPACE
@@ -56,6 +58,12 @@ class Lexer:
 				raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			elif kind == 'SPACE':
 				continue
+			elif kind in ['FID', 'FORMVID', 'ACTVID']:
+				if value in self.reserved_keywords:
+					token = self.reserved_keywords_tokens[value]
+					if token in tokens:
+						kind = token
+					raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			self.pos += len(value) + 1
 			return Token(kind, value)
 		return Token('EOF', 'EOF')
