@@ -23,7 +23,7 @@ class Lexer:
 			['RET', r'return'],
 			['FID', r'[A-Za-z]+'],
 			['FORMVID', r'[A-Za-z]+'],
-			['ACTVID', r'[0-9A-Za-z]+'],
+			['VID', r'[0-9A-Za-z]+'],
 			['LBR', r'('],
 			['RBR', r')'],
 			['LCBR', r'{'],
@@ -58,7 +58,7 @@ class Lexer:
 				raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			elif kind == 'SPACE':
 				continue
-			elif kind in ['FID', 'FORMVID', 'ACTVID']:
+			elif kind in ['FID', 'FORMVID', 'VID']:
 				if value in self.reserved_keywords:
 					token = self.reserved_keywords_tokens[value]
 					if token in tokens:

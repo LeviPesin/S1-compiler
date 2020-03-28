@@ -1,12 +1,12 @@
 program: (block)*
 block: func | ife | ifne | whilee | whilene | statement_list
 func: FID LBR formparams RBR LCBR func_statement_list RCBR
-ife: IFE LBR actvar RBR LCBR statement_list RCBR
-ifne: IFNE LBR actvar RBR LCBR statement_list RCBR
-whilee: WHIE LBR actvar RBR LCBR statement_list RCBR
-whilene: WHINE LBR actvar RBR LCBR statement_list RCBR
+ife: IFE LBR var RBR LCBR statement_list RCBR
+ifne: IFNE LBR var RBR LCBR statement_list RCBR
+whilee: WHIE LBR var RBR LCBR statement_list RCBR
+whilene: WHINE LBR var RBR LCBR statement_list RCBR
 formparams: (formvar COMMA)* formvar | EMP
-actvar: ACTVID
+var: VID
 formvar: FORMVID
 func_statement_list: (func_statement | statement)*
 statement_list: (statement)*
@@ -16,7 +16,7 @@ assign: var ASSIGN expr
 funcall: FID LBR actparams RBR
 actparams: (expr COMMA)* expr | EMP
 expr: (expr | term) (UNION | INTER | DIFF | SYMDIFF) (expr | term)
-term: funcall | actvar | set | LBR expr RBR
+term: funcall | var | set | LBR expr RBR
 set: LSBR actparams RSBR
 
 
@@ -34,6 +34,6 @@ RET - "return"
 COMMA - comma ,
 SEMICOL - semicolon ;
 EMP - empty
-ACTVID and FORMVID - names of actual and formal variables
+VID and FORMVID - names of variables and formal variables
 ASSIGN - equality sign =
 UNION, INTER, DIFF and SYMDIFF - union sign +, intersection sign *, difference sign -, and symmetric difference sign ~
