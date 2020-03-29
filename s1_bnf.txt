@@ -6,14 +6,15 @@ ifne: IFNE LBR var RBR LCBR statement_list RCBR
 whilee: WHIE LBR var RBR LCBR statement_list RCBR
 whilene: WHINE LBR var RBR LCBR statement_list RCBR
 formparams: (formvar COMMA)* formvar | EMP
-var: VID
-formvar: FORMVID
+var: ID
+formvar: ID
 func_statement_list: (func_statement | statement)*
 statement_list: (statement)*
 func_statement: statement | RET expr COMMA
 statement: assign SEMICOL | funcall SEMICOL | LCOMM COMMENT RCOMM | EMP
 assign: var ASSIGN expr
-funcall: FID LBR actparams RBR
+funcall: func_name LBR actparams RBR
+func_name: ID
 actparams: (expr COMMA)* expr | EMP
 expr: (expr | term) (UNION | INTER | DIFF | SYMDIFF) (expr | term)
 term: funcall | var | set | LBR expr RBR
@@ -21,7 +22,6 @@ set: LSBR actparams RSBR
 
 
 
-FID - function name
 LBR and RBR - round brackets ( and )
 LCBR and RCBR - curly brackets { and }
 LCOMM and RCOMM - /* and */
@@ -34,6 +34,6 @@ RET - "return"
 COMMA - comma ,
 SEMICOL - semicolon ;
 EMP - empty
-VID and FORMVID - names of variables and formal variables
+ID - name of function or variable
 ASSIGN - equality sign =
 UNION, INTER, DIFF and SYMDIFF - union sign +, intersection sign *, difference sign -, and symmetric difference sign ~

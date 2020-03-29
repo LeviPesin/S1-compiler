@@ -21,9 +21,7 @@ class Lexer:
 			('WHIE', r'whilee'),
 			('WHINE', r'whilene'),
 			('RET', r'return'),
-			('FID', r'[A-Za-z]+'),
-			('FORMVID', r'[A-Za-z]+'),
-			('VID', r'[0-9A-Za-z]+'),
+			('ID', r'[0-9A-Za-z]+'),
 			('LBR', r'\('),
 			('RBR', r'\)'),
 			('LCBR', r'{'),
@@ -45,10 +43,10 @@ class Lexer:
 		]
 		tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
 		self.mos = re.finditer(tok_regex, self.text)
-		self.reserved_keywords = ['ife', 'ifne', 'whilee', 'whilene', 'return']
-		self.reserved_keywords_tokens = [{'ife', 'IFE'}, {'ifne', 'IFNE'}, {'whilee', 'WHIE'}, {'whilene', 'WHINE'}, {'return', 'RET'}]
 		
-	def get_next_token(self, tokens):
+	def get_next_token(self):
+		if self.pos == len(self.text):
+			return Token('EOF', 'EOF')
 		for mo in self.mos:
 			if mo.start() < self.pos:
 				continue
@@ -58,13 +56,5 @@ class Lexer:
 				raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			elif kind == 'SPACE':
 				continue
-			elif kind in ('FID', 'FORMVID', 'VID'):
-				if value in self.reserved_keywords:
-					token = self.reserved_keywords_tokens(value)
-					if token in tokens:
-						kind = token
-					else:
-						raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			self.pos = mo.end()
 			return Token(kind, value)
-		return Token('EOF', 'EOF')
