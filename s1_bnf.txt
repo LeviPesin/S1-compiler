@@ -5,20 +5,19 @@ ife: IFE LBR var RBR LCBR statement_list RCBR
 ifne: IFNE LBR var RBR LCBR statement_list RCBR
 whilee: WHIE LBR var RBR LCBR statement_list RCBR
 whilene: WHINE LBR var RBR LCBR statement_list RCBR
-formparams: (formvar COMMA)* formvar | EMP
+formparams: (var COMMA)* var | EMP
 var: ID
-formvar: ID
 func_statement_list: (func_statement | statement)*
 statement_list: (statement)*
 func_statement: RET expr SEMICOL
 statement: assign SEMICOL | funcall SEMICOL | LCOMM COMMENT RCOMM | EMP
 assign: var ASSIGN expr
-funcall: func_name LBR actparams RBR
+funcall: func_name LBR params RBR
 func_name: ID
-actparams: (expr COMMA)* expr | EMP
+params: (expr COMMA)* expr | EMP
 expr: term | expr (UNION | INTER | DIFF | SYMDIFF) expr
 term: funcall | var | set | LBR expr RBR
-set: LSBR actparams RSBR
+set: LSBR params RSBR
 
 
 
