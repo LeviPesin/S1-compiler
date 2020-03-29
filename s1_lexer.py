@@ -63,7 +63,8 @@ class Lexer:
 					token = self.reserved_keywords_tokens(value)
 					if token in tokens:
 						kind = token
-					raise RuntimeError(f'{value!r} unexpected at {self.pos}')
+					else:
+						raise RuntimeError(f'{value!r} unexpected at {self.pos}')
 			self.pos = mo.end() + 1
 			return Token(kind, value)
 		return Token('EOF', 'EOF')
