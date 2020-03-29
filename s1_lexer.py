@@ -39,8 +39,8 @@ class Lexer:
 			('INTER', r'\*'),
 			('DIFF', r'-'),
 			('SYMDIFF', r'~'),
-			('EMP', r''),
 			('SPACE', r'\s'),
+			('EMP', r''),
 			('MISMATCH', r'.')
 		]
 		tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
@@ -65,6 +65,6 @@ class Lexer:
 						kind = token
 					else:
 						raise RuntimeError(f'{value!r} unexpected at {self.pos}')
-			self.pos = mo.end() + 1
+			self.pos = mo.end()
 			return Token(kind, value)
 		return Token('EOF', 'EOF')
