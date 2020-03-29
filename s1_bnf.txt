@@ -1,6 +1,6 @@
 program: (block)*
 block: func | ife | ifne | whilee | whilene | statement_list
-func: FID LBR formparams RBR LCBR func_statement_list RCBR
+func: func_name LBR formparams RBR LCBR func_statement_list RCBR
 ife: IFE LBR var RBR LCBR statement_list RCBR
 ifne: IFNE LBR var RBR LCBR statement_list RCBR
 whilee: WHIE LBR var RBR LCBR statement_list RCBR
