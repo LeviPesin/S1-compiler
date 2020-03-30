@@ -92,7 +92,7 @@ class Parser:
 		elif self.current_token.type == 'WHINE':
 			return self.whilene()
 		else:
-			assert self.current_token.type == 'ID':
+			assert self.current_token.type == 'ID'
 			pos = self.lexer.pos
 			try:
 				return self.func()
