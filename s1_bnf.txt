@@ -10,7 +10,7 @@ var: ID
 func_statement_list: (func_statement | statement)*
 statement_list: (statement)*
 func_statement: RET expr SEMICOL
-statement: assign SEMICOL | funcall SEMICOL | LCOMM COMMENT RCOMM | EMP
+statement: block | assign SEMICOL | funcall SEMICOL | LCOMM COMMENT RCOMM | EMP
 assign: var ASSIGN expr
 funcall: func_name LBR params RBR
 func_name: ID
