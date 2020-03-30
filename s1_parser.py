@@ -66,10 +66,10 @@ class Set(AST):
 class Parser:
 	def __init__(self, lexer):
 		self.lexer = lexer
-		self.current_token = self.lexer.get_next_token()
+		self.current_token = self.lexer.get_self.next_token()
 		
 	def next(self):
-		self.current_token = self.lexer.get_next_token()
+		self.current_token = self.lexer.get_self.next_token()
 	
 	def parse(self):
 		node = self.program()
@@ -102,74 +102,74 @@ class Parser:
 	
 	def ife(self):
 		assert self.current_token.type == 'IFE'
-		next()
+		self.next()
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		var = self.var()
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
-		next()
+		self.next()
 		return IfE(var, stats_list)
 	
 	def ifne(self):
 		assert self.current_token.type == 'IFNE'
-		next()
+		self.next()
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		var = self.var()
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
-		next()
+		self.next()
 		return IfNe(var, stats_list)
 	
 	def whilee(self):
 		assert self.current_token.type == 'WHIE'
-		next()
+		self.next()
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		var = self.var()
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
-		next()
+		self.next()
 		return WhileE(var, stats_list)
 	
 	def whilene(self):
 		assert self.current_token.type == 'WHINE'
-		next()
+		self.next()
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		var = self.var()
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
-		next()
+		self.next()
 		return WhileNe(var, stats_list)
 		
 	def func(self):
 		name = self.func_name()
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		pars = self.formparams()
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.func_statement_list()
 		assert self.current_token.type == 'RCBR'
-		next()
+		self.next()
 		node = Func(name, stats_list)
 		node.pars = pars
-		next()
+		self.next()
 		return node
 		
 	def formparams(self):
@@ -177,22 +177,22 @@ class Parser:
 		while self.current_token.type == 'ID':
 			node.append(self.var())
 			if self.current_token.type != 'COMMA':
-				next()
+				self.next()
 				assert self.current_token.type != 'ID'
 		if node == []:
-			next()
+			self.next()
 		return node
 		
 	def var(self):
 		assert self.current_token.type == 'ID'
 		token = self.current_token
-		next()
+		self.next()
 		return Var(token)
 	
 	def func_name(self):
 		assert self.current_token.type == 'ID'
 		token = self.current_token
-		next()
+		self.next()
 		return token.value
 		
 	def statement_list(self):
@@ -223,10 +223,10 @@ class Parser:
 	
 	def statement(self):
 		if self.current_token.type == 'EMP':
-			next()
+			self.next()
 			return NoOp()
 		elif self.current_token.type == 'LCOMM':
-			next()
+			self.next()
 			return NoOp()
 		else:
 			assert self.current_token.type == 'ID'
@@ -234,12 +234,12 @@ class Parser:
 			try:
 				node = self.assign()
 				assert self.current_token.type == 'SEMICOL'
-				next()
+				self.next()
 				return node
 			except:
 				node = self.funcall()
 				assert self.current_token.type == 'SEMICOL'
-				next()
+				self.next()
 				return node
 				
 	def params(self):
@@ -251,20 +251,20 @@ class Parser:
 				if signal:
 					signal2 = False
 				node.append(self.expr())
-				next()
+				self.next()
 				if self.current_token.type != 'COMMA':
 					signal = True
 			except:
 				assert signal2
 		if node == []:
-			next()
+			self.next()
 		return node
 		
 	def assign(self):
 		assert self.current_token.type == 'ID'
 		var = self.var()
 		assert self.current_token.type == 'ASSIGN'
-		next()
+		self.next()
 		expr = self.expr()
 		return Assign(var, expr)
 		
@@ -272,11 +272,11 @@ class Parser:
 		assert self.current_token.type == 'ID'
 		node = FuncCall(self.func_name())
 		assert self.current_token.type == 'LBR'
-		next()
+		self.next()
 		pars = self.params()
 		node.pars = pars
 		assert self.current_token.type == 'RBR'
-		next()
+		self.next()
 		return node
 	
 	def expr(self):
@@ -296,10 +296,10 @@ class Parser:
 		if self.current_token.type == 'LSBR':
 			return self.set1()
 		elif self.current_token.type == 'LBR':
-			next()
+			self.next()
 			node = self.expr()
 			assert self.current_token.type == 'RBR'
-			next()
+			self.next()
 			return node
 		else:
 			assert self.current_token.type == 'ID'
