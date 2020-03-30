@@ -66,10 +66,10 @@ class Set(AST):
 class Parser:
 	def __init__(self, lexer):
 		self.lexer = lexer
-		self.current_token = self.lexer.get_self.next_token()
+		self.current_token = self.lexer.get_next_token()
 		
 	def next(self):
-		self.current_token = self.lexer.get_self.next_token()
+		self.current_token = self.lexer.get_next_token()
 	
 	def parse(self):
 		node = self.program()
