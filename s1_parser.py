@@ -78,7 +78,7 @@ class Parser:
 	
 	def program(self):
 		node = Program()
-		while (self.current_token != 'EOF'):
+		while (self.current_token.type != 'EOF'):
 			node.blocks.append(self.block())
 		return node
 	
@@ -111,6 +111,7 @@ class Parser:
 		assert self.current_token.type == 'RBR'
 		self.next()
 		assert self.current_token.type == 'LCBR'
+		self.next()
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
 		self.next()
@@ -125,6 +126,7 @@ class Parser:
 		assert self.current_token.type == 'RBR'
 		self.next()
 		assert self.current_token.type == 'LCBR'
+		self.next()
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
 		self.next()
@@ -139,6 +141,7 @@ class Parser:
 		assert self.current_token.type == 'RBR'
 		self.next()
 		assert self.current_token.type == 'LCBR'
+		self.next()
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
 		self.next()
@@ -153,6 +156,7 @@ class Parser:
 		assert self.current_token.type == 'RBR'
 		self.next()
 		assert self.current_token.type == 'LCBR'
+		self.next()
 		stats_list = self.statement_list()
 		assert self.current_token.type == 'RCBR'
 		self.next()
@@ -166,6 +170,7 @@ class Parser:
 		assert self.current_token.type == 'RBR'
 		self.next()
 		assert self.current_token.type == 'LCBR'
+		self.next()
 		stats_list = self.func_statement_list()
 		assert self.current_token.type == 'RCBR'
 		self.next()
@@ -204,13 +209,9 @@ class Parser:
 	def statement_list(self):
 		stats_list = []
 		while True:
-			pos = self.lexer.pos
-			token = self.current_token
-			try:
+			if self.current_token.type in ['ID', 'LCOMM']:
 				stats_list.append(self.statement())
-			except:
-				self.lexer.pos = pos
-				self.current_token = token
+			else:
 				break
 		if stats_list == []:
 			self.next()
@@ -219,22 +220,24 @@ class Parser:
 	def func_statement_list(self):
 		stats_list = []
 		while True:
-			pos = self.lexer.pos
-			token = self.current_token
-			try:
+			if self.current_token.type in ['ID', 'LCOMM']:
 				stats_list.append(self.statement())
-			except:
-				self.lexer.pos = pos
-				self.current_token = token
-				try:
+			else:
+				if self.current_token.type == 'RET':
 					stats_list.append(self.func_statement())
-				except:
-					self.lexer.pos = pos
-					self.current_token = token
+				else:
 					break
 		if stats_list == []:
 			self.next()
 		return stats_list
+	
+	def func_statement(self):
+		assert self.current_token.type == 'RET'
+		self.next()
+		node = self.expr()
+		assert self.current_token.type == 'SEMICOL'
+		self.next()
+		return node
 	
 	def statement(self):
 		if self.current_token.type == 'EMP':
@@ -246,12 +249,15 @@ class Parser:
 		else:
 			assert self.current_token.type == 'ID'
 			pos = self.lexer.pos
+			token = self.current_token
 			try:
 				node = self.assign()
 				assert self.current_token.type == 'SEMICOL'
 				self.next()
 				return node
 			except:
+				self.lexer.pos = pos
+				self.current_token = token
 				node = self.funcall()
 				assert self.current_token.type == 'SEMICOL'
 				self.next()
@@ -267,14 +273,15 @@ class Parser:
 			try:
 				node.append(self.expr())
 				if signal:
+					print(1)
 					signal2 = False
-				self.next()
 				if self.current_token.type != 'COMMA':
 					signal = True
 			except:
 				self.lexer.pos = pos
 				self.current_token = token
 				assert signal2
+				break
 		if node == []:
 			self.next()
 		return node
@@ -299,19 +306,13 @@ class Parser:
 		return node
 	
 	def expr(self):
-		pos = self.lexer.pos
-		token = self.current_token
-		try:
-			node = self.term()
-			return node
-		except:
-			self.lexer.pos = pos
-			self.current_token = token
-			left = self.expr()
-			token = self.current_token
-			assert token.type in ['UNION', 'INTER', 'DIFF', 'SYMDIFF']
+		assert self.current_token.type in ['ID', 'LBR', 'LSBR']
+		left = self.term()
+		if self.current_token.type in ['UNION', 'INTER', 'DIFF', 'SYMDIFF']:
+			self.next()
 			right = self.expr()
-			return BinOp(left, token, right)
+			return BinOp(left, self.current_token, right)
+		return left
 	
 	def term(self):
 		if self.current_token.type == 'LSBR':
@@ -337,8 +338,10 @@ class Parser:
 	
 	def set1(self):
 		assert self.current_token.type == 'LSBR'
+		self.next()
 		pars = self.params()
 		node = Set()
 		node.pars = pars
 		assert self.current_token.type == 'RSBR'
+		self.next()
 		return node
