@@ -20,6 +20,10 @@ class WhileNe(AST):
 	def __init__(self, left, right):
 		self.cond = left
 		self.stat = right
+		
+class Return(AST):
+	def __init__(self, expr):
+		self.expr = expr
 
 class Func(AST):
 	def __init__(self, left, right):
@@ -229,7 +233,7 @@ class Parser:
 	def func_statement(self):
 		assert self.current_token.type == 'RET'
 		self.next()
-		node = self.expr()
+		node = Return(self.expr())
 		assert self.current_token.type == 'SEMICOL'
 		self.next()
 		return node
@@ -309,10 +313,11 @@ class Parser:
 	def expr(self):
 		assert self.current_token.type in ['ID', 'LBR', 'LSBR']
 		left = self.term()
+		token = self.current_token
 		if self.current_token.type in ['UNION', 'INTER', 'DIFF', 'SYMDIFF']:
 			self.next()
 			right = self.expr()
-			return BinOp(left, self.current_token, right)
+			return BinOp(left, token, right)
 		return left
 	
 	def term(self):
