@@ -280,10 +280,12 @@ class Parser:
 		return node
 	
 	def expr(self):
+		pos = self.lexer.pos
 		try:
 			node = self.term()
 			return node
-		else:
+		except:
+			self.lexer.pos = pos
 			left = self.expr()
 			token = self.current_token
 			assert token.type in ['UNION', 'INTER', 'DIFF', 'SYMDIFF']
