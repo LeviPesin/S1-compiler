@@ -94,10 +94,12 @@ class Parser:
 		else:
 			assert self.current_token.type == 'ID'
 			pos = self.lexer.pos
+			token = self.current_token
 			try:
 				return self.func()
 			except:
 				self.lexer.pos = pos
+				self.current_token = token
 				return self.statement_list()
 	
 	def ife(self):
@@ -162,7 +164,10 @@ class Parser:
 		self.next()
 		pars = self.formparams()
 		assert self.current_token.type == 'RBR'
+		print("func")
+		print(self.current_token.type, self.lexer.pos)
 		self.next()
+		print(self.current_token.type, self.lexer.pos)
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.func_statement_list()
 		assert self.current_token.type == 'RCBR'
@@ -177,8 +182,15 @@ class Parser:
 		while self.current_token.type == 'ID':
 			node.append(self.var())
 			if self.current_token.type != 'COMMA':
+				pos = self.lexer.pos
+				token = self.current_token
+				print(self.current_token.type, self.lexer.pos)
 				self.next()
+				print(self.current_token.type, self.lexer.pos)
 				assert self.current_token.type != 'ID'
+				self.lexer.pos = pos
+				self.current_token = token
+				print(self.current_token.type, self.lexer.pos)
 		if node == []:
 			self.next()
 		return node
@@ -199,26 +211,35 @@ class Parser:
 		stats_list = []
 		while True:
 			pos = self.lexer.pos
+			token = self.current_token
 			try:
 				stats_list.append(self.statement())
 			except:
 				self.lexer.pos = pos
+				self.current_token = token
 				break
+		if stats_list == []:
+			self.next()
 		return stats_list
 	
 	def func_statement_list(self):
 		stats_list = []
 		while True:
 			pos = self.lexer.pos
+			token = self.current_token
 			try:
 				stats_list.append(self.statement())
 			except:
 				self.lexer.pos = pos
+				self.current_token = token
 				try:
 					stats_list.append(self.func_statement())
 				except:
 					self.lexer.pos = pos
+					self.current_token = token
 					break
+		if stats_list == []:
+			self.next()
 		return stats_list
 	
 	def statement(self):
@@ -247,14 +268,18 @@ class Parser:
 		signal = False
 		signal2 = True
 		while True:
+			pos = self.lexer.pos
+			token = self.current_token
 			try:
+				node.append(self.expr())
 				if signal:
 					signal2 = False
-				node.append(self.expr())
 				self.next()
 				if self.current_token.type != 'COMMA':
 					signal = True
 			except:
+				self.lexer.pos = pos
+				self.current_token = token
 				assert signal2
 		if node == []:
 			self.next()
@@ -281,11 +306,13 @@ class Parser:
 	
 	def expr(self):
 		pos = self.lexer.pos
+		token = self.current_token
 		try:
 			node = self.term()
 			return node
 		except:
 			self.lexer.pos = pos
+			self.current_token = token
 			left = self.expr()
 			token = self.current_token
 			assert token.type in ['UNION', 'INTER', 'DIFF', 'SYMDIFF']
@@ -304,11 +331,13 @@ class Parser:
 		else:
 			assert self.current_token.type == 'ID'
 			pos = self.lexer.pos
+			token = self.current_token
 			try:
 				node = self.funcall()
 				return node
 			except:
 				self.lexer.pos = pos
+				self.current_token = token
 				node = self.var()
 				return node
 	
