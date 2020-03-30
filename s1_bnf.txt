@@ -15,7 +15,7 @@ assign: var ASSIGN expr
 funcall: func_name LBR params RBR
 func_name: ID
 params: (expr COMMA)* expr | EMP
-expr: term | expr (UNION | INTER | DIFF | SYMDIFF) expr
+expr: (term (UNION | INTER | DIFF | SYMDIFF))* term
 term: funcall | var | set | LBR expr RBR
 set: LSBR params RSBR
 
