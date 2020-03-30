@@ -4,6 +4,10 @@ text = '''nextNumber(num) {
     return num + [num];
 }'''
 lexer = Lexer(text)
+lexer.pos = 15
+print(lexer.get_next_token())
+lexer.pos = 15
+print(lexer.get_next_token())
 ##print(lexer.get_next_token())
 ##print(lexer.get_next_token())
 ##print(lexer.get_next_token())
@@ -17,6 +21,5 @@ lexer = Lexer(text)
 ##print(lexer.get_next_token())
 ##print(lexer.get_next_token())
 ##print(lexer.get_next_token())
-##print(lexer.get_next_token())
-parser = Parser(lexer)
-parsed = parser.parse()
+##parser = Parser(lexer)
+##parsed = parser.parse()
