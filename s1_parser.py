@@ -164,10 +164,7 @@ class Parser:
 		self.next()
 		pars = self.formparams()
 		assert self.current_token.type == 'RBR'
-		print("func")
-		print(self.current_token.type, self.lexer.pos)
 		self.next()
-		print(self.current_token.type, self.lexer.pos)
 		assert self.current_token.type == 'LCBR'
 		stats_list = self.func_statement_list()
 		assert self.current_token.type == 'RCBR'
@@ -184,13 +181,10 @@ class Parser:
 			if self.current_token.type != 'COMMA':
 				pos = self.lexer.pos
 				token = self.current_token
-				print(self.current_token.type, self.lexer.pos)
 				self.next()
-				print(self.current_token.type, self.lexer.pos)
 				assert self.current_token.type != 'ID'
 				self.lexer.pos = pos
 				self.current_token = token
-				print(self.current_token.type, self.lexer.pos)
 		if node == []:
 			self.next()
 		return node

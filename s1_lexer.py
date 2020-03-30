@@ -42,7 +42,7 @@ class Lexer:
 			('MISMATCH', r'.')
 		]
 		tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
-		self.mos = re.finditer(tok_regex, self.text)
+		self.mos = list(re.finditer(tok_regex, self.text))
 		
 	def get_next_token(self):
 		if self.pos == len(self.text):
