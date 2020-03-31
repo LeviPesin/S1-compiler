@@ -212,7 +212,7 @@ class Parser:
 	def statement_list(self):
 		stats_list = []
 		while True:
-			if self.current_token.type in ['ID', 'LCOMM']:
+			if self.current_token.type in ['ID', 'LCOMM', 'IFE', 'IFNE', 'WHIE', 'WHINE']:
 				stats_list.append(self.statement())
 			else:
 				break

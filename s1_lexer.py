@@ -45,7 +45,7 @@ class Lexer:
 		self.mos = list(re.finditer(tok_regex, self.text))
 		
 	def get_next_token(self):
-		if self.pos == len(self.text):
+		if (self.pos == (len(self.text) - 1)) or (self.pos == len(self.text)):
 			return Token('EOF', 'EOF')
 		for mo in self.mos:
 			if mo.start() < self.pos:
