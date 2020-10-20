@@ -1,7 +1,7 @@
 class Function:
 	def __init__(self, name):
 		self.name = name
-		self.uncompiledPars = [];
+		self.pars = [];
 		self.uncompiledCode = []
 		self.code = dict()
 		self.variables = dict()
@@ -39,7 +39,7 @@ class Compiler:
 			if type(block).__name__ == "Func":
 				func = Function(block.name)
 				self.functions[block.name] = func
-				func.uncompiledPars = block.pars
+				func.pars = block.pars
 				func.uncompiledCode = block.code
 			else:
 				main_tree = main_tree + block
@@ -50,6 +50,12 @@ class Compiler:
 		for name in self.functions:
 			func = self.functions[name]
 			self.parseFunction(func)
+			if name == "main":
+				func.code[self.next_code_register] = ClearOp(self.next_code_register + 1, self.next_var_register)
+				self.next_code_register += 1
+				func.code[self.next_code_register] = AssertOp(None, self.next_var_register, '')
+				self.next_code_register += 1
+				self.next_var_register += 1
 		for name in self.functions:
 			func = self.functions[name]
 			self.parseCallsInFunction(func)
@@ -57,10 +63,40 @@ class Compiler:
 		return self.code
 	
 	def parseFunction(self, func):
+		if func.pars.len > 0:
+			func.code[self.next_code_register] = PopOp(self.next_code_register + 1, \
+			                                [self.next_var_register + i for i in range(func.pars.len + 1)])
+			self.next_code_register += 1
+			self.next_var_register += 1
+			self.next_id += 1
+			for par in func.pars:
+				var = Variable(par, func, self.next_var_register)
+				func.variables[par] = var
+				self.next_var_register += 1
 		func.code.update(self.parseStatList(func.uncompiledCode, func))
+		func.code[self.next_code_register] = ReturnOp()
+		self.next_code_register += 1
 	
 	def parseCallsInFunction(self, func):
-		#???????!!!!????!!!!?????!!!!?????!???!?!?!?!?!?
+		for code_register in func.code:
+			op = func.code[code_register]
+			if type(op).__name__ == 'PushOp':
+				called_func = self.functions[func.code[code_register].next]
+				func.code[code_register].next = min(called_func.keys())
+	
+	def parseFuncCall(self, call, func):
+		code = dict()
+		pars_registers = []
+		for par in call.pars:
+			var = Variable("temp_" + str(self.next_id), func, self.next_var_register)
+			func.variables["temp_" + str(self.next_id)] = var
+			self.next_id += 1
+			self.next_var_register += 1
+			code.update(parseExpr(par, var))
+			pars_registers.append(var.register)
+		code[self.next_code_register] = PushOp(call.name, [self.next_code_register + 1] + pars_registers)
+		self.next_code_register += 1
+		return code
 	
 	def parseStatList(self, list, func):
 		code = dict()
@@ -70,10 +106,10 @@ class Compiler:
 				func.variables["temp_" + str(self.next_id)] = var
 				self.next_id += 1
 				self.next_var_register += 1
-				code.update(parseExpr(stat.cond, var))
+				code.update(self.parseExpr(stat.cond, var))
 				register = self.next_code_register
 				self.next_code_register += 1
-				code.update(parseStatList(stat.stat, func))
+				code.update(self.parseStatList(stat.stat, func))
 				if type(stat).__name__ == 'IfE':
 					code[register] = JumpOp(register + 1, self.next_code_register, var.register)
 				elif type(stat).__name__ == 'IfNe':
@@ -91,9 +127,10 @@ class Compiler:
 				func.variables["temp_" + str(self.next_id)] = var
 				self.next_id += 1
 				self.next_var_register += 1
-				code.update(parseExpr(stat.cond, var))
-				code[self.next_register] = ReturnOp(var.register) #???????!!!!????!!!!?????!!!!?????!???!?!?!?!?!?
+				code.update(self.parseExpr(stat.cond, var))
+				code[self.next_code_register] = PushOp(self.next_code_register + 1, [var.register])
 				self.next_code_register += 1
+				break
 			elif type(stat).__name__ == 'Assign':
 				var_name = stat.var
 				try:
@@ -102,13 +139,13 @@ class Compiler:
 					var = Variable(var_name, func, self.next_var_register)
 					func.variables[var_name] = var
 					self.next_var_register += 1
-				code.update(parseExpr(stat.value, var))
+				code.update(self.parseExpr(stat.value, var))
 			else:
 				assert type(stat).__name__ == 'FuncCall'
-				#???????!!!!????!!!!?????!!!!?????!???!?!?!?!?!?
+				code.update(self.parseFuncCall(stat, func))
 		return code
 		
-	def parseExpr(expr, var):
+	def parseExpr(self, expr, var):
 		code = dict()
 		func = var.function
 		if type(expr).__name__ == 'Var':
@@ -118,7 +155,6 @@ class Compiler:
 				var2 = self.functions["main"].variables[expr.name]
 			code[self.next_code_register] = MovOp(self.next_code_register + 1, var2.register, var.register)
 			self.next_code_register += 1
-			return code
 		elif type(expr).__name__ == 'BinOp':
 			var2 = Variable("temp_" + str(self.next_id), func, self.next_var_register)
 			func.variables["temp_" + str(self.next_id)] = var2
@@ -128,25 +164,26 @@ class Compiler:
 			func.variables["temp_" + str(self.next_id)] = var3
 			self.next_id += 1
 			self.next_var_register += 1
-			code.update(parseExpr(left, var2))
-			code.update(parseExpr(right, var3))
+			code.update(self.parseExpr(left, var2))
+			code.update(self.parseExpr(right, var3))
 			op = {"+": BinOpType.UNION, "*": BinOpType.INTERSECTION, 
 			      "-": BinOpType.DIFFERENCE, "~": BinOpType.SYM_DIFFERENCE}[expr.op.value]
-			code[self.next_code_register] = BinOp(self.next_code_register + 1, op, var2, var3, var)
+			code[self.next_code_register] = BinOp(self.next_code_register + 1, op, var2.register, var3.register, var.register)
 			self.next_code_register += 1
-			return code
 		elif type(expr).__name__ == 'Set':
-			code[self.next_code_register] = ClearOp(self.next_code_register + 1, var)
+			code[self.next_code_register] = ClearOp(self.next_code_register + 1, var.register)
 			self.next_code_register += 1
 			var2 = Variable("temp_" + str(self.next_id), func, self.next_var_register)
 			func.variables["temp_" + str(self.next_id)] = var2
 			self.next_id += 1
 			self.next_var_register += 1
 			for par in expr.pars:
-				code.update(parseExpr(par, var2))
-				code[self.next_code_register] = AddOp(self.next_code_register + 1, var2, var)
+				code.update(self.parseExpr(par, var2))
+				code[self.next_code_register] = AddOp(self.next_code_register + 1, var2.register, var.register)
 				self.next_code_register += 1
-			return code
 		else:
 			assert type(expr).__name__ == 'FuncCall'
-			#???????!!!!????!!!!?????!!!!?????!???!?!?!?!?!?
+			code.update(self.parseFuncCall(stat, func))
+			code[self.next_code_register] = PopOp(self.next_code_register + 1, var.register)
+			self.next_code_register += 1
+		return code
