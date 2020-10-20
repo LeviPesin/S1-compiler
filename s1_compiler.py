@@ -128,7 +128,7 @@ class Compiler:
 				self.next_id += 1
 				self.next_var_register += 1
 				code.update(self.parseExpr(stat.cond, var))
-				code[self.next_code_register] = PushOp(self.next_code_register + 1, [var.register])
+				code[self.next_code_register] = PushOp(self.next_code_register + 1, [None, var.register])
 				self.next_code_register += 1
 				break
 			elif type(stat).__name__ == 'Assign':
