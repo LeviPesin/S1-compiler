@@ -53,7 +53,7 @@ class Compiler:
 			if name == "main":
 				func.code[self.next_code_register] = ClearOp(self.next_code_register + 1, self.next_var_register)
 				self.next_code_register += 1
-				func.code[self.next_code_register] = AssertOp(None, self.next_var_register, '')
+				func.code[self.next_code_register] = JumpOp(None, None, self.next_var_register)
 				self.next_code_register += 1
 				self.next_var_register += 1
 		for name in self.functions:
