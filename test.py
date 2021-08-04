@@ -24,10 +24,20 @@ multiplyNumbers(num1, num2) {
     return ans;
 }
 
+test1(a, b) {
+    return;
+}
+
+test2(c) {
+
+}
+
 alpha = [];
 beta = [];
 beta = addNumbers(alpha, nextNumber(alpha));
 gamma = beta;
+test1(alpha, beta);
+test2(beta);
 '''
 lexer = Lexer(text)
 next_token = lexer.get_next_token()
