@@ -22,8 +22,9 @@ class Compiler:
 		6) DeconstructOp - if test is empty, jump to one state. Else select one element, assign it to element,
                            assign rest of test to rest, jump to another state.
 		7) AssertOp - raise error if test is empty.
-		8) CallOp - call function.
-		9) ReturnOp - return to return_state, specified by CallOp.'''
+		8) PushOp - push values of registers to stack.
+		9) PullOp - pull values of registers to stack.
+		10) ReturnOp - return to return_state, specified by PushOp.'''
     def __init__(self, parser):
         self.tree = parser.parse()
 		self.code = dict()
