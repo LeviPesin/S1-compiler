@@ -67,8 +67,6 @@ class Compiler:
 			func.code[self.next_code_register] = PopOp(self.next_code_register + 1, \
 			                                [self.next_var_register + i for i in range(func.pars.len + 1)])
 			self.next_code_register += 1
-			self.next_var_register += 1
-			self.next_id += 1
 			for par in func.pars:
 				var = Variable(par, func, self.next_var_register)
 				func.variables[par] = var
